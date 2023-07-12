@@ -138,11 +138,12 @@ input {
     margin-bottom: 50px;
 }
 
-.button_login{
+.MDP_oubli{
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	text-decoration: underline;
 }
 
 #connect {

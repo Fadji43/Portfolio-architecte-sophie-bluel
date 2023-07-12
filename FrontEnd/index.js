@@ -45,27 +45,44 @@ const filterButtons = document.querySelectorAll('.filtres');
     });
   })
 
+  function isLoggedIn() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      return true;
+    }
+    return false;
+  }
+  
+  const modeEditeur = document.getElementById('modeEditor');
+  const btns = document.querySelectorAll('.btnModifier');
+  const btnCategory = document.querySelector('.category')
+  if (isLoggedIn()) {
+    btns.forEach(btnModifier => {
+      btnModifier.style.display = "block";
+    });
+    modeEditeur.style.display = "block";
+    btnCategory.style.display = "none";
+  } else {
+    btns.forEach(btnModifier => {
+      btnModifier.style.display = "none";
+    });
+    modeEditeur.style.display = "none";
+    btnCategory.style.display = "block";
+  }
 
-// affichage du mode éditeur avec éléments à masquer ou faire apparaitre
-const modeEditeur = document.getElementById('#editorMode')
-const logoModifier = document.querySelector('modifier')
-if (isAdmin) {
-  modeEditeur.style.display = 'block';
-  logoModifier.style.display = 'block';
-}
-else {
-  modeEditeur.style.display = 'none';
-  logoModifier.style.display = 'none';
-}
+//addEventlisteners au clique de btnModifier
+btns.addEventListener('click', (=> {
+  modal1)
 
-function (isAdmin)
+ 
 
 //création de la modale
+const 
 //modal1
 //modal2
 //modal3
 
-//addEventlisteners au clique de title_Project et caption_photo
-// au clique du bouton ajoutre photo chnagement de modale
+
+// au clique du bouton ajoutre photo changement de modale
 //charger la photo et insérer texte et catégorie
 // valider les informations et fermture de la modale
