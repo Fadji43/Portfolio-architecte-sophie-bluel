@@ -14,12 +14,12 @@
 	<link rel="stylesheet" href="./assets/style.css">
 	<script src="index.js" defer></script>
 </head>
+<body>
 <div id="modeEditor" style="text-align: center">
 	<i class="fa-regular fa-pen-to-square fa-2xl modifier" style="color: #fcfcfd" style="display: inline-block"></i>
 	<p style="display: inline-block">Mode édition</p>
 	<button class="btnChange" style="display: inline-block">publier les changements</button>
-</div>
-<body>	
+</div>	
 <header>
 	<h1>Sophie Bluel<span>Architecte d'intérieur</span></h1>
 	<nav>
@@ -35,10 +35,10 @@
 	<section id="introduction">
 		<figure>
 			<img src="./assets/images/sophie-bluel.png" alt="">
-			<div class="btnModifier">
+			<button class="btnModifier">
 				<i class="fa-regular fa-pen-to-square fa-xl" style="display: inline-block"></i>
 				<p style="display: inline-block">modifier</p>
-			</div>
+			</button>
 		</figure>
 		<article>
 			<h2>Designer d'espace</h2>
@@ -50,10 +50,10 @@
 	<section id="portfolio">
 		<div class="title_Project">
 			<h2>Mes Projets</h2>
-			<div class="btnModifier">
+			<button class="btnModifier" type="button">
 				<i class="fa-regular fa-pen-to-square fa-xl" style="display: inline-block" ></i>
 				<p style="display: inline-block">modifier</p>
-			</div>
+			</button>
 		</div>
 		<div class="category" style="text-align:center">
 			<button class="filtres" data-category="all">Tous</button>
@@ -80,17 +80,26 @@
 			<textarea name="message" id="message" cols="30" rows="10"></textarea>
 			<input type="submit" value="Envoyer">
 		</form>
-		<dialog id="modal1">
+		<!--MODALE-->
+		<dialog  id="modal1" class="modal font-modal">
+			<i class="fa fa-xmark fa-2xl" class="echap"></i>
 			<h2>Galerie photo</h2>
-			<div class="gallery">
+			<div class="gallery-modal">
+				<!--<img id="modal-image">
+				<p>Editer</p>-->
 			</div>
-			<button >Ajouter une photo</button>
-			<button>Suprimer la galerie</button>
+			<div class="btns_modal">		
+				<button class="ajoutPhoto">Ajouter une photo</button>
+				<button class="supprimer">Supprimer la galerie</button>
+			</div>
 		</dialog>
-		<dialog id="modal2">
-			<h2>Ajout Photo</h2>
-			<div class="cadre-ajout"
-				<img>
+		<dialog class="modal2">
+			<div class="title-gallery">
+				<h2>Ajout Photo</h2>
+				<i class="fa-regular fa-xmark echap"></i> <!--croix close modale-->
+			</div>	
+			<div class="cadre-ajout">
+			<i class="fa-sharp fa-light fa-image-landscape" style="color: #b8babc;"></i>
 				<button> + Ajouter photo</button>
 				<p>jpg, png : 4 mo max</p>
 			</div>
@@ -102,8 +111,8 @@
 			</form>	
 			<button class="btn-grey">Valider</button>
 		</dialog>
-		<dialog id="modal3">
-			<div class="cadre-ajout"
+		<dialog class="modal3">
+			<div class="cadre-ajout">
 				<img> 
 			</div>
 			<form>
@@ -113,11 +122,9 @@
 				<input type="text">
 			</form>	
 			<button class="btn-green">Valider</button> 
-		</dialog>
+	</dialog>
 	</section>
-
 </main>
-
 <footer>
 	<nav>
 		<ul>
