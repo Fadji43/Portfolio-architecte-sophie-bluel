@@ -1,11 +1,11 @@
+let Allmworks 
+
 fetch("http://localhost:5678/api/works")
   .then(response => response.json())
   .then(data => {
-    const allWorks = data;
-    const photo = allWorks[0, 1];
+    allWorks = data;
     ajoutGallery(allWorks);
-    ajoutGalleryModal(photo);
-
+    setUpEvents();
   })
 
   function ajoutGallery(works) {
@@ -75,29 +75,85 @@ fetch("http://localhost:5678/api/works")
   
   //ouverture de la modale au clique de btnModifier
   const modal = document.getElementById('modal');
-  const closeModal = document.querySelector('echap');
-  const modal1 = document.getElementById('modal1');
+  const modalContent = document.getElementById('modal-content')
+  ///const closeModal = document.querySelector('echap');
   btns.forEach(btn => {
     btn.addEventListener('click', () => {
-      modal1.showModal();
+      modal.showModal();
+      modalDisplayWorksGallery()
     });
   });
-  
-  //faire apparaitre la galerie image + texte 
+
+// Afficher la galerie d'images dans la modale
+function modalDisplayWorksGallery() {
+  const modal = document.getElementById('modal');
+  const modalContent = document.getElementById('modal-content')
+  modalContent.innerHTML = "";
+  modalContent.innerHTML = `
+    <i class="fa fa-xmark"></i>
+    <h2>Galerie photo</h2> `;
+  const galleryModal = document.createElement('div'); // Utilisation de 'div' au lieu de '.gallery-modal'
+  galleryModal.classList.add('gallery-modal'); // Ajout de la classe 'gallery-modal' à l'élément div
+  galleryModal.innerHTML = ""; // Cet élément semble être vide, vous pouvez le supprimer si nécessaire.
+
+  const photosModal = document.createElement('img');
+  photosModal.src = photo.imageUrl; // Assurez-vous de définir la source de l'image correctement, par exemple, en utilisant une variable appropriée.
+
+  const textModal = document.createElement('text-modal');
+  textModal.innerHTML = "Editer";
+
+  // Ajout de boutons à la modale
+  const addButton = document.createElement('button');
+  addButton.innerHTML = "Ajouter une photo";
+
+  const deleteButton = document.createElement('button');
+  deleteButton.innerHTML = "Supprimer la galerie";
+
+  // Ajout des éléments à la modale
+  galleryModal.appendChild(photosModal);
+  galleryModal.appendChild(textModal);
+  galleryModal.appendChild(addButton);
+  galleryModal.appendChild(deleteButton);
+
+  // Ajout de la modale à l'élément modalContent (supposant que modalContent est déjà défini)
+  modalContent.appendChild(galleryModal);
+}
+
+  // fermer la modale
+  // evenement au clique pour ouvrir le formulaire 
+  addButton.addEventListener('click', () => {
+
+  }); 
+
+  //afficher le formulaire pour ajouter un work
+  function modalDisplayAddWorks () {
+    const modalContent = document.getElementById('modal-content')
+    modalContent.innerHTML = "";
+    modalContent.innerHTML = `
+      <i class="fa fa-xmark"></i>
+      <h2>Ajout Photo</h2> `;
+  }
+
+  function SetUpEvents () {
+    modalDisplayWorksGallery()
+  }
+  /*//faire apparaitre la galerie image + texte 
   function ajoutGalleryModal(photo) {
     const photosModal = document.createElement('img');
     photosModal.src = photo.imageUrl;
-    const galleryModal = document.querySelector('.gallery-modal');
+    const galleryModal = document.createElement('.gallery-modal');
     galleryModal.innerHTML = "";
     const textModal = document.createElement('text-modal');
-    textModal.innerHTML = "";
-  
+    textModal.innerHTML = "Editer";
+  // faire la boucle
     galleryModal.appendChild(photosModal);
     galleryModal.appendChild(textModal);
     modal1.appendChild(galleryModal);
   }
-  
- 
+
+ajoutGalleryModal(photo);
+
+// fermer modale au clique e echap ainsi que le font 
    
 
 /*const btnphoto = document.querySelector('ajoutPhoto');
