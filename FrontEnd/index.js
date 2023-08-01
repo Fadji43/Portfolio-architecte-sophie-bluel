@@ -56,9 +56,7 @@ function isLoggedIn() {
 function logoutUser() {
   localStorage.removeItem('token'); // Supprime le token du local storage
   // Ajouter un délai avant la redirection pour permettre la mise à jour de l'interface utilisateur
-  setTimeout(() => {
     window.location.href = 'index.html'; // Redirige vers la page d'accueil après la déconnexion
-  });
 }
 
 
@@ -284,6 +282,7 @@ function modalDisplayAddWorks() {
   
   const grayBar = document.querySelector('.gray-bar');
   modalContent.appendChild(grayBar);
+  
   const btnValidate = document.createElement('button');
   btnValidate.innerHTML = "Valider"
   btnValidate.classList.add('button-validate');
@@ -309,7 +308,8 @@ async function deleteProject(id) {
 };  
  //télecharger une image
  async function downloadImg() {
-  const addBtn = document.getElementById("imageInput");
+  const addBtn = document.getElementById('imageInput')
+  const buttonDownload = document.querySelector(".download-button");
   const countrysideIcon = document.querySelector(".countryside");
   const formatModal = document.querySelector(".format");
   const imagePreview = document.querySelector(".preview-img");
@@ -324,6 +324,7 @@ async function deleteProject(id) {
       imagePreview.src = newImg.result;
 
       // Cacher l'icône "countryside", le bouton et le paragraphe
+      buttonDownload.style.display = "none";
       countrysideIcon.style.display = "none";
       addBtn.style.display = "none";
       formatModal.style.display = "none";
@@ -333,48 +334,37 @@ async function deleteProject(id) {
     newImg.readAsDataURL(selectedFile);
   });
 }
-
+//Ajout du projet sur galerie
 async function addProject() {
   const selectedFile = document.getElementById("imageInput").files[0];
   const title = document.getElementById("titleInput").value;
-  const category = document.getElementById("categoryInput").value;
+  const category = document.getElementById("categoryId").value;
 
-  // Crée un objet FormData pour envoyer le fichier d'image
+
+  // FormData envoie le fichier d'image, titre et catégorie
   const formData = new FormData();
   formData.append("image", selectedFile);
   formData.append("title", title);
   formData.append("category", category);
+  for (const value of formData.values()) {
+    console.log(value);
+  }
 
-  // Utilise l'API fetch pour envoyer le FormData au serveur
+  // Requête POST du projet
   const response = await fetch("http://localhost:5678/api/works", {
     method: "POST",
-    headers: {
-      'authorization': `bearer ${localStorage.getItem('token')}`
+    headers: {'authorization': `bearer ${localStorage.getItem('token')}`
     },
     body: formData,
   });
 
   // Vérifie si la réponse indique que l'envoi a réussi
   if (response.ok) {
+    ajoutGallery(allWorks);
     closeModal();
-    // Récupère les travaux mis à jour et met à jour la galerie
-    fetchWorksAndUpdateGallery();
   } else {
-    // si le téléchargement a échoué
     console.error("Échec du téléchargement du projet.");
   }
-}
+};
 
-// Fonction pour récupérer les travaux mis à jour et mettre à jour la galerie
-async function fetchWorksAndUpdateGallery() {
-  const response = await fetch("http://localhost:5678/api/works");
-  if (response.ok) {
-    const data = await response.json();
-    allWorks = data;
-    ajoutGallery(allWorks);
-  } else {
-    console.error("Échec de la récupération des travaux depuis le serveur.");
-  }
-}
-
-// valider les informations et fermeture de la modale
+//bouton devient vert quand l'image, titre et catégorie sont afficher
