@@ -5,7 +5,7 @@ fetch("http://localhost:5678/api/works")
   .then(data => {
     allWorks = data;
     ajoutGallery(allWorks);
-   // setUpEvents();
+    
   });
 
 function ajoutGallery(works) {
@@ -47,31 +47,71 @@ filterButtons.forEach(button => {
   });
 });
 
+// connexion et déconnexion
 function isLoggedIn() {
   const token = localStorage.getItem('token');
-  if (token) {
-    return true;
-  }
-  return false;
+  return !!token;
 }
 
-//éléments apparaissant ou disparu en fonction de la connexion
+function logoutUser() {
+  localStorage.removeItem('token'); // Supprime le token du local storage
+  // Ajouter un délai avant la redirection pour permettre la mise à jour de l'interface utilisateur
+  setTimeout(() => {
+    window.location.href = 'index.html'; // Redirige vers la page d'accueil après la déconnexion
+  });
+}
+
+
+//éléments apparaissant, disparu ou modifié en fonction de la connexion
 const modeEditeur = document.getElementById('modeEditor');
+const connexion = document.querySelector('.liens')
 const btns = document.querySelectorAll('.btnModifier');
 const btnCategory = document.querySelector('.category');
-if (isLoggedIn()) {
+
+//fonction l'affichage après connexion
+function updateLogin() {
   btns.forEach(btnModifier => {
     btnModifier.style.display = "block";
   });
   modeEditeur.style.display = "block";
   btnCategory.style.display = "none";
-} else {
+  connexion.innerText = "Logout";
+}
+
+//fct de l'affichage après la déconnexion
+function updateLogout()  {
   btns.forEach(btnModifier => {
     btnModifier.style.display = "none";
   });
   modeEditeur.style.display = "none";
   btnCategory.style.display = "block";
-};
+  connexion.innerText = "Login";
+}
+
+// Vérifie l'état de connexion au chargement de la page et met à jour l'interface utilisateur en conséquence
+if (isLoggedIn()) {
+  updateLogin();
+} else {
+  updateLogout();
+}
+
+// Ajoutez un événement de clic au bouton pour gérer la connexion/déconnexion
+const liensBtn = document.querySelector('.liens');
+liensBtn.addEventListener('click', () => {
+  if (isLoggedIn()) {
+    logoutUser(); // Déconnexion de l'utilisateur si déjà connecté
+  } else {
+    console.log('Connectez l\'utilisateur ici.');
+    updateLogin(); // Met à jour l'interface utilisateur après la connexion simulée
+  }
+});
+
+// MAJ l'interface utilisateur au chargement de la page
+if (isLoggedIn()) {
+  updateLogin();
+} else {
+  updateLogout();
+}
 
 //MODALE//
 //ouverture de la modale au clique de btnModifier
@@ -80,8 +120,10 @@ const modalContent = document.getElementById('modal-content');
 
 btns.forEach(btn => {
   btn.addEventListener('click', () => {
+   console.log('closeModal') 
     modal.showModal();
     modalDisplayWorksGallery(allWorks);
+  
   });
 });
 
@@ -90,13 +132,10 @@ const titleModal = document.querySelector('.title-modal');
 
 // icone pour fermer la modale
 function closeModal() {
-  modal.style.display = "none";
+  modal.close();
 }
 
-// Fonction pour réouvrir la modale
-function openModal() {
-  modal.show(); // Utilisez modal.show() pour réouvrir la modale
-} 
+
 /*// Écouteur d'événements pour détecter les clics sur le document
 document.addEventListener('click', (event) => {
   const clickedElement = event.target;
@@ -147,9 +186,9 @@ function modalDisplayWorksGallery(works) {
     galleryModal.appendChild(projetModal);
 
     deleteIcon.addEventListener('click', () => {
-      deleteProjet();
+      deleteProject(work.id);
     });
-});  
+  }); 
  
 // barre grise
   const grayBar = document.createElement('div')
@@ -165,44 +204,68 @@ function modalDisplayWorksGallery(works) {
 
     addButton.addEventListener('click', () => {
       modalDisplayAddWorks();
-    });  
-
+    }); 
+    
 //supprimer la galerie 
   const deleteGallery = document.createElement('button')
   deleteGallery.innerHTML = "Supprimer la galerie"
   deleteGallery.classList.add('supprimer');
   buttonModal.appendChild(deleteGallery);
   modalContent.appendChild(buttonModal);
+};
 
+function modalDisplayAddWorks() {
+  const modalContent = document.getElementById('modal-content');
+  modalContent.innerHTML = `
+  <div class="modal">
+  <i class="fa-solid fa-arrow-left fa-xl arrow-return"></i>
+  <i class="fa fa-times fa-xl close-modal"></i>
+  <h2 class="title-modal">Ajout Photo</h2>
+  <div class="download-modal">
+    <i class="fa fa-image countryside"></i>
+    <label for="imageInput" class="download-button">+ Ajouter photo</label>
+    <input type="file" id="imageInput"  accept="image/*">
+    <p class="format">jpg, png: 4mo max</p>
+    <img class="preview-img" src="#" alt="aperçu de l'image" style="display:none">
+  </div>
+  <form class="formulaire-modal">
+    <label>Titre</label>
+    <input id="titleInput" type="text">
+    <label>Catégorie</label>
+    <select class="category-modal" id="categoryInput"></select>
+  </form>
+  <div class="gray-bar"></div>
+</div>
+  `;
 
-  //afficher le formulaire pour ajouter un work
-  function modalDisplayAddWorks () {
-    const modalContent = document.getElementById('modal-content')
-    modalContent.innerHTML = "";
-    modalContent.innerHTML = `
-    <i class="fa-solid fa-arrow-left fa-xl arrow-return"></i>
-    <i class="fa fa-times fa-xl close-modal"></i>
-    <h2 class="title-modal">Ajout Photo</h2>
-    <div class= "download-modal">
-      <i class="fa fa-image countryside"></i>
-      <button class="download-button">+ Ajouter Photo</button>
-      <p class="format">jpg,png : 4mo max</p>
-    </div>
-    <form class="formulaire-modal">
-      <label>Titre</label>
-      <input></input>
-      <label >Catégorie</label>
-      <input class="category-modal"></input>
-    </form>
-      <div class="gray-bar"></div>
-    `;
-
-   // Flèche de retour modal
+  // Flèche de retour modal
   const arrowModalBtn = document.createElement('i');
   arrowModalBtn.classList.add('fa-solid', 'fa-arrow-left', 'fa-xl', 'arrow-return');
   arrowModalBtn.addEventListener('click', () => {
-    modalDisplayWorksGallery(works);
+    modalDisplayWorksGallery(allWorks);
   });
+
+  modalContent.appendChild(arrowModalBtn);
+
+  // Sélection des catégories dans le formulaire
+  // Options à afficher
+  const options = [
+    { value: "tous", text: "Tous" },
+    { value: "objets", text: "Objets" },
+    { value: "appartements", text: "Appartements" },
+    { value: "hotels&resto", text: "Hôtels et restaurants" },
+  ];
+
+  const optionsCategory = document.querySelector('.category-modal');
+  optionsCategory.setAttribute('id', 'options');
+
+  // Créer et ajouter les options
+  options.forEach(function (option) {
+    const optionElement = document.createElement("option");
+    optionElement.value = option.value;
+    optionElement.text = option.text;
+    optionsCategory.appendChild(optionElement);
+    }); 
 
   modalContent.appendChild(arrowModalBtn);
   const closeModalButton = document.querySelector('.close-modal');
@@ -225,27 +288,93 @@ function modalDisplayWorksGallery(works) {
   btnValidate.innerHTML = "Valider"
   btnValidate.classList.add('button-validate');
   modalContent.appendChild(btnValidate);
-  }
+  
+  downloadImg();
+
+  btnValidate.addEventListener('click', () => {
+    addProject();
+  });
+  };
 
 
-// fonction appelle les événements
-  /*function setUpEvents() {
-    modalDisplayWorksGallery();
-    deletProjet();
-  }
-};*/
-
-async function deleteProjet() {
-  const response = await fetch('http://localhost:5678/api/works/{id}', {
+//supprimer un projet
+async function deleteProject(id) {
+  const response = await fetch(`http://localhost:5678/api/works/${id}`, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 
+    'authorization': `bearer ${localStorage.getItem('token')}`
+    }  
+  });
+  
+};  
+ //télecharger une image
+ async function downloadImg() {
+  const addBtn = document.getElementById("imageInput");
+  const countrysideIcon = document.querySelector(".countryside");
+  const formatModal = document.querySelector(".format");
+  const imagePreview = document.querySelector(".preview-img");
+
+  // Ajouter un écouteur d'événement "change" pour l'input file
+  addBtn.addEventListener("change", function (event) {
+    const selectedFile = event.target.files[0];
+    const newImg = new FileReader();
+
+    newImg.addEventListener("load", function () {
+      imagePreview.style.display = "block";
+      imagePreview.src = newImg.result;
+
+      // Cacher l'icône "countryside", le bouton et le paragraphe
+      countrysideIcon.style.display = "none";
+      addBtn.style.display = "none";
+      formatModal.style.display = "none";
+    });
+
+    // Charger le fichier sélectionné dans le FileReader
+    newImg.readAsDataURL(selectedFile);
+  });
+}
+
+async function addProject() {
+  const selectedFile = document.getElementById("imageInput").files[0];
+  const title = document.getElementById("titleInput").value;
+  const category = document.getElementById("categoryInput").value;
+
+  // Crée un objet FormData pour envoyer le fichier d'image
+  const formData = new FormData();
+  formData.append("image", selectedFile);
+  formData.append("title", title);
+  formData.append("category", category);
+
+  // Utilise l'API fetch pour envoyer le FormData au serveur
+  const response = await fetch("http://localhost:5678/api/works", {
+    method: "POST",
+    headers: {
+      'authorization': `bearer ${localStorage.getItem('token')}`
+    },
+    body: formData,
   });
 
-  response.ok
-    ? console.log('Élément supprimé avec succès !')
-    : console.log('Échec lors de la suppression de l\'élément.');
+  // Vérifie si la réponse indique que l'envoi a réussi
+  if (response.ok) {
+    closeModal();
+    // Récupère les travaux mis à jour et met à jour la galerie
+    fetchWorksAndUpdateGallery();
+  } else {
+    // si le téléchargement a échoué
+    console.error("Échec du téléchargement du projet.");
   }
-}  
+}
 
-//charger la photo et insérer texte et catégorie
-// valider les informations et fermture de la modale
+// Fonction pour récupérer les travaux mis à jour et mettre à jour la galerie
+async function fetchWorksAndUpdateGallery() {
+  const response = await fetch("http://localhost:5678/api/works");
+  if (response.ok) {
+    const data = await response.json();
+    allWorks = data;
+    ajoutGallery(allWorks);
+  } else {
+    console.error("Échec de la récupération des travaux depuis le serveur.");
+  }
+}
+
+// valider les informations et fermeture de la modale
