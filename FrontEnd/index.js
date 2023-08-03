@@ -118,9 +118,9 @@ const modalContent = document.getElementById('modal-content');
 
 btns.forEach(btn => {
   btn.addEventListener('click', () => {
-   console.log('closeModal') 
-    modal.showModal();
+   console.log('OpenModal') 
     modalDisplayWorksGallery(allWorks);
+    modal.showModal();
   
   });
 });
@@ -128,11 +128,11 @@ btns.forEach(btn => {
 //titre
 const titleModal = document.querySelector('.title-modal');
 
+
 // icone pour fermer la modale
 function closeModal() {
   modal.close();
 }
-
 
 /*// Écouteur d'événements pour détecter les clics sur le document
 document.addEventListener('click', (event) => {
@@ -141,9 +141,14 @@ document.addEventListener('click', (event) => {
   
   // Vérifier si l'élément cliqué n'appartient pas à la modale
   if (!modalElement.contains(clickedElement)) {
-    closeModal(); // Appel closeModal() pour fermer la modale
+    if (!modalElement.classList.contains('open')) {
+      modal.showModal(); // Appel openModal() pour ouvrir la modale
+    } else {
+      closeModal(); // Appel closeModal() pour fermer la modale
+    }
   }
 });*/
+
 
   
 // Afficher la galerie d'images dans la modale
@@ -230,7 +235,12 @@ function modalDisplayAddWorks() {
     <label>Titre</label>
     <input id="titleInput" type="text">
     <label>Catégorie</label>
-    <select class="category-modal" id="categoryInput"></select>
+    <select class="category-modal" id="options" onchange="formCompleted()">
+      <option value="" disabled selected>Tous</option>
+      <option value="category1">Objets</option>
+      <option value="category2">Appartements</option>
+      <option value="category3">Hôtels et restaurants</option>
+    </select>
   </form>
   <div class="gray-bar"></div>
 </div>
@@ -247,7 +257,7 @@ function modalDisplayAddWorks() {
 
   // Sélection des catégories dans le formulaire
   // Options à afficher
-  const options = [
+ /* const options = [
     { value: "tous", text: "Tous" },
     { value: "objets", text: "Objets" },
     { value: "appartements", text: "Appartements" },
@@ -264,6 +274,7 @@ function modalDisplayAddWorks() {
     optionElement.text = option.text;
     optionsCategory.appendChild(optionElement);
     }); 
+*/
 
   modalContent.appendChild(arrowModalBtn);
   const closeModalButton = document.querySelector('.close-modal');
@@ -289,12 +300,11 @@ function modalDisplayAddWorks() {
   modalContent.appendChild(btnValidate);
   
   downloadImg();
-
   btnValidate.addEventListener('click', () => {
     addProject();
+    formCompleted();
   });
   };
-
 
 //supprimer un projet
 async function deleteProject(id) {
@@ -304,8 +314,8 @@ async function deleteProject(id) {
     'authorization': `bearer ${localStorage.getItem('token')}`
     }  
   });
-  
-};  
+}; 
+
  //télecharger une image
  async function downloadImg() {
   const addBtn = document.getElementById('imageInput')
@@ -314,7 +324,7 @@ async function deleteProject(id) {
   const formatModal = document.querySelector(".format");
   const imagePreview = document.querySelector(".preview-img");
 
-  // Ajouter un écouteur d'événement "change" pour l'input file
+  // Ajouter un écouteur d'événement "change"
   addBtn.addEventListener("change", function (event) {
     const selectedFile = event.target.files[0];
     const newImg = new FileReader();
@@ -334,37 +344,71 @@ async function deleteProject(id) {
     newImg.readAsDataURL(selectedFile);
   });
 }
+/*// bouton qui devient vert au formulaire rempli
+function formCompleted() {
+  const imageInput = document.getElementById("imageInput").value;
+  const titleInput = document.getElementById("titleInput").value;
+  const options = document.getElementById("options").value;
+  const btnValidate = document.getElementById("btnValidate");
+
+  // Vérifier si tous les champs sont remplis
+  if (imageInput !== '' && titleInput !== '' && options !== '') {
+    // Activer le bouton et changer la couleur
+    btnValidate.disabled = false;
+    btnValidate.style.backgroundColor = 'green'; // Vous pouvez changer la couleur ici
+  } else {
+    // Désactiver le bouton et remettre la couleur par défaut
+    btnValidate.disabled = true;
+    btnValidate.style.backgroundColor = 'gray'; // Vous pouvez changer la couleur par défaut ici
+  }
+}
+
+// Ajouter les écouteurs d'événements une seule fois, en dehors de la fonction formCompleted()
+const imageInput = document.getElementById("imageInput");
+const titleInput = document.getElementById("titleInput");
+const options = document.getElementById("options");
+
+imageInput.addEventListener('change', formCompleted);
+titleInput.addEventListener('input', formCompleted);
+options.addEventListener('change', formCompleted);*/
+
+
 //Ajout du projet sur galerie
 async function addProject() {
   const selectedFile = document.getElementById("imageInput").files[0];
   const title = document.getElementById("titleInput").value;
-  const category = document.getElementById("categoryId").value;
-
+  const category = document.getElementById("options").value;
 
   // FormData envoie le fichier d'image, titre et catégorie
   const formData = new FormData();
-  formData.append("image", selectedFile);
-  formData.append("title", title);
-  formData.append("category", category);
+formData.append("image", selectedFile);
+formData.append("title", title);
+formData.append("category", 1);
+  
   for (const value of formData.values()) {
     console.log(value);
   }
 
-  // Requête POST du projet
-  const response = await fetch("http://localhost:5678/api/works", {
-    method: "POST",
-    headers: {'authorization': `bearer ${localStorage.getItem('token')}`
-    },
-    body: formData,
-  });
+  try {
+    const response = await fetch("http://localhost:5678/api/works", {
+      method: "POST",
+      headers: {'authorization': `bearer ${localStorage.getItem('token')}`},
+      body: formData,
+    });
 
-  // Vérifie si la réponse indique que l'envoi a réussi
-  if (response.ok) {
-    ajoutGallery(allWorks);
-    closeModal();
-  } else {
-    console.error("Échec du téléchargement du projet.");
+    // Vérifie si la réponse indique que l'envoi a réussi
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Projet ajouté avec succès :", data);
+      ajoutGallery(allWorks);
+      closeModal();
+    } else {
+      console.error("Échec du téléchargement du projet.");
+    }
+  } catch (error) {
+    console.error("Erreur lors de la requête :", error);
   }
-};
+}
+
 
 //bouton devient vert quand l'image, titre et catégorie sont afficher
