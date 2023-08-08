@@ -266,7 +266,6 @@ footer nav ul {
 
 /*****************Modale*************/
 #modal {
-	position: fixed;
 	width: 35%;
 	height: 80%;
 	background-color: white;
@@ -288,6 +287,7 @@ footer nav ul {
 	top: 30px;
 }
 .title-modal {
+	width:100%;
 	color: black;
 }
 .gallery-modal {
@@ -382,7 +382,7 @@ margin: 10px;
 	align-items: center;
 	background-color: rgb(214, 220, 223);
 	border-radius: 5px; 
-	padding: 20px;
+	height: 200px;
 }
 
 .countryside {
@@ -408,8 +408,8 @@ margin: 10px;
 }
 
 .preview-img {
-	width: 200px;
-	height: auto;
+	width: auto;
+	height: 200px;
 	z-index: 1;
 }
 
@@ -423,7 +423,7 @@ margin: 10px;
 	padding: 10px;
 }
 
-.button-validate { 
+#button-validate { 
 	align-self: center;
 	width: 50%;
 	background-color: rgb(199, 197, 197);
@@ -434,4 +434,10 @@ margin: 10px;
 	font-family: 'Work Sans';
 	font-weight: 400;
 }
+
+.green-button {
+	background-color: #1D6154;
+	color: white;
+}
+
 

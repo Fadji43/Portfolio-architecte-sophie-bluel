@@ -131,26 +131,17 @@ const titleModal = document.querySelector('.title-modal');
 
 // icone pour fermer la modale
 function closeModal() {
+  const modal = document.getElementById('modal');
   modal.close();
 }
-
-/*// Écouteur d'événements pour détecter les clics sur le document
-document.addEventListener('click', (event) => {
-  const clickedElement = event.target;
-  const modalElement = document.getElementById('modal');
-  
-  // Vérifier si l'élément cliqué n'appartient pas à la modale
-  if (!modalElement.contains(clickedElement)) {
-    if (!modalElement.classList.contains('open')) {
-      modal.showModal(); // Appel openModal() pour ouvrir la modale
-    } else {
-      closeModal(); // Appel closeModal() pour fermer la modale
-    }
+// Écouteur d'événement pour fermer la modale lorsque l'utilisateur clique à l'extérieur de celle-ci
+window.addEventListener('click', (event) => {
+  if (event.target === modal) {
+    closeModal();
   }
-});*/
+});
 
 
-  
 // Afficher la galerie d'images dans la modale
 function modalDisplayWorksGallery(works) {
   const modalContent = document.getElementById('modal-content');
@@ -175,6 +166,7 @@ function modalDisplayWorksGallery(works) {
     iconeModal.classList.add('icone-modal')
     const editIcon = document.createElement('i');
     editIcon.classList.add('fa', 'fa-arrows-up-down-left-right');
+    editIcon.style.display = 'none';
     const deleteIcon = document.createElement('i');
     deleteIcon.classList.add('fa', 'fa-trash-can');
     const textModal = document.createElement('text-modal');
@@ -188,8 +180,20 @@ function modalDisplayWorksGallery(works) {
     projetModal.appendChild(textModal);
     galleryModal.appendChild(projetModal);
 
+     // Gestionnaires d'événements pour afficher/masquer l'icône
+  photoModal.addEventListener('mouseover', () => {
+    editIcon.style.display = 'inline-block'; // Afficher l'icône lorsque la souris passe sur l'image
+  });
+
+  photoModal.addEventListener('mouseout', () => {
+    editIcon.style.display = 'none'; // Cacher l'icône lorsque la souris quitte l'image
+  });
+  
+  // appel de la fonction supprimer sur l'icone
     deleteIcon.addEventListener('click', () => {
       deleteProject(work.id);
+
+      
     });
   }); 
  
@@ -220,7 +224,7 @@ function modalDisplayWorksGallery(works) {
 function modalDisplayAddWorks() {
   const modalContent = document.getElementById('modal-content');
   modalContent.innerHTML = `
-  <div class="modal">
+  <div id="modal" data-keyboard="true" data-backdrop="true">
   <i class="fa-solid fa-arrow-left fa-xl arrow-return"></i>
   <i class="fa fa-times fa-xl close-modal"></i>
   <h2 class="title-modal">Ajout Photo</h2>
@@ -235,14 +239,15 @@ function modalDisplayAddWorks() {
     <label>Titre</label>
     <input id="titleInput" type="text">
     <label>Catégorie</label>
-    <select class="category-modal" id="options" onchange="formCompleted()">
-      <option value="" disabled selected>Tous</option>
+    <select class="category-modal" id="options">
+      <option value="disabled selected">Tous</option>
       <option value="category1">Objets</option>
       <option value="category2">Appartements</option>
       <option value="category3">Hôtels et restaurants</option>
     </select>
   </form>
   <div class="gray-bar"></div>
+  <button id="button-validate" class="green-button">Valider</button>
 </div>
   `;
 
@@ -254,27 +259,6 @@ function modalDisplayAddWorks() {
   });
 
   modalContent.appendChild(arrowModalBtn);
-
-  // Sélection des catégories dans le formulaire
-  // Options à afficher
- /* const options = [
-    { value: "tous", text: "Tous" },
-    { value: "objets", text: "Objets" },
-    { value: "appartements", text: "Appartements" },
-    { value: "hotels&resto", text: "Hôtels et restaurants" },
-  ];
-
-  const optionsCategory = document.querySelector('.category-modal');
-  optionsCategory.setAttribute('id', 'options');
-
-  // Créer et ajouter les options
-  options.forEach(function (option) {
-    const optionElement = document.createElement("option");
-    optionElement.value = option.value;
-    optionElement.text = option.text;
-    optionsCategory.appendChild(optionElement);
-    }); 
-*/
 
   modalContent.appendChild(arrowModalBtn);
   const closeModalButton = document.querySelector('.close-modal');
@@ -294,15 +278,13 @@ function modalDisplayAddWorks() {
   const grayBar = document.querySelector('.gray-bar');
   modalContent.appendChild(grayBar);
   
-  const btnValidate = document.createElement('button');
-  btnValidate.innerHTML = "Valider"
-  btnValidate.classList.add('button-validate');
+  const btnValidate = document.getElementById('button-validate');
   modalContent.appendChild(btnValidate);
   
   downloadImg();
+  
   btnValidate.addEventListener('click', () => {
     addProject();
-    formCompleted();
   });
   };
 
@@ -323,7 +305,7 @@ async function deleteProject(id) {
   const countrysideIcon = document.querySelector(".countryside");
   const formatModal = document.querySelector(".format");
   const imagePreview = document.querySelector(".preview-img");
-
+  
   // Ajouter un écouteur d'événement "change"
   addBtn.addEventListener("change", function (event) {
     const selectedFile = event.target.files[0];
@@ -332,6 +314,7 @@ async function deleteProject(id) {
     newImg.addEventListener("load", function () {
       imagePreview.style.display = "block";
       imagePreview.src = newImg.result;
+  
 
       // Cacher l'icône "countryside", le bouton et le paragraphe
       buttonDownload.style.display = "none";
@@ -344,33 +327,6 @@ async function deleteProject(id) {
     newImg.readAsDataURL(selectedFile);
   });
 }
-/*// bouton qui devient vert au formulaire rempli
-function formCompleted() {
-  const imageInput = document.getElementById("imageInput").value;
-  const titleInput = document.getElementById("titleInput").value;
-  const options = document.getElementById("options").value;
-  const btnValidate = document.getElementById("btnValidate");
-
-  // Vérifier si tous les champs sont remplis
-  if (imageInput !== '' && titleInput !== '' && options !== '') {
-    // Activer le bouton et changer la couleur
-    btnValidate.disabled = false;
-    btnValidate.style.backgroundColor = 'green'; // Vous pouvez changer la couleur ici
-  } else {
-    // Désactiver le bouton et remettre la couleur par défaut
-    btnValidate.disabled = true;
-    btnValidate.style.backgroundColor = 'gray'; // Vous pouvez changer la couleur par défaut ici
-  }
-}
-
-// Ajouter les écouteurs d'événements une seule fois, en dehors de la fonction formCompleted()
-const imageInput = document.getElementById("imageInput");
-const titleInput = document.getElementById("titleInput");
-const options = document.getElementById("options");
-
-imageInput.addEventListener('change', formCompleted);
-titleInput.addEventListener('input', formCompleted);
-options.addEventListener('change', formCompleted);*/
 
 
 //Ajout du projet sur galerie
@@ -408,7 +364,27 @@ formData.append("category", 1);
   } catch (error) {
     console.error("Erreur lors de la requête :", error);
   }
-}
+};
 
+//remplissage du formulaire bouton devient vert quand le formulaire est complété
+  document.addEventListener("DOMContentLoaded", function () {
+    const previewImg = document.querySelector(".preview-img");
+    const buttonValidate = document.getElementById("button-validate");
+    const title = document.getElementById("titleInput");
+  
+       // Écouteur d'événement pour le changement de l'input de type text
+      title.addEventListener("input", function () {
+        updateButton();
+      });
+     
 
-//bouton devient vert quand l'image, titre et catégorie sont afficher
+    function updateButton() {
+      if (previewImg.src !== "#" && title.value.trim() !== "") {
+        buttonValidate.classList.add(".green-button")
+      } else {
+        buttonValidate.classList.remove(".green-button")
+      }
+    }});
+ 
+ 
+ 
