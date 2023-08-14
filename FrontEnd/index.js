@@ -128,7 +128,6 @@ btns.forEach(btn => {
 //titre
 const titleModal = document.querySelector('.title-modal');
 
-
 // icone pour fermer la modale
 function closeModal() {
   const modal = document.getElementById('modal');
@@ -180,7 +179,7 @@ function modalDisplayWorksGallery(works) {
     projetModal.appendChild(textModal);
     galleryModal.appendChild(projetModal);
 
-     // Gestionnaires d'événements pour afficher/masquer l'icône
+     // Gestionnaires d'événements pour afficher/masquer l'icône deplacement
   photoModal.addEventListener('mouseover', () => {
     editIcon.style.display = 'inline-block'; // Afficher l'icône lorsque la souris passe sur l'image
   });
@@ -192,8 +191,6 @@ function modalDisplayWorksGallery(works) {
   // appel de la fonction supprimer sur l'icone
     deleteIcon.addEventListener('click', () => {
       deleteProject(work.id);
-
-      
     });
   }); 
  
@@ -211,14 +208,41 @@ function modalDisplayWorksGallery(works) {
 
     addButton.addEventListener('click', () => {
       modalDisplayAddWorks();
-    }); 
-    
+
+  //appel de la fonction du bouton vert
+  const form = document.querySelector('.formulaire-modal');
+  for (const el of form.elements) {
+    el.addEventListener('change', validateForm);
+  }
+ 
+  const previewImg = document.querySelector(".preview-img");
+  previewImg.addEventListener('load', validateForm);
+});
+
 //supprimer la galerie 
   const deleteGallery = document.createElement('button')
   deleteGallery.innerHTML = "Supprimer la galerie"
   deleteGallery.classList.add('supprimer');
   buttonModal.appendChild(deleteGallery);
   modalContent.appendChild(buttonModal);
+};
+
+// remplissage du formulaire pour chgt du bouton vert et appel modale message d'erreur
+function validateForm() {
+  const previewImg = document.querySelector(".preview-img");
+  const title = document.getElementById("titleInput");
+  const categoryModal = document.querySelector(".category-modal")
+  const buttonValidate = document.getElementById("button-validate");
+
+  const hasImage = previewImg.src !== '#';
+  const isTitleOk = title.value.trim().length > 0;
+  const isCategorySelected = categoryModal.value !== '';
+
+  if ( hasImage && isTitleOk && isCategorySelected) {
+    buttonValidate.classList.add('green-button');
+  } else {
+    buttonValidate.classList.remove('green-button');
+  };
 };
 
 function modalDisplayAddWorks() {
@@ -228,26 +252,26 @@ function modalDisplayAddWorks() {
   <i class="fa-solid fa-arrow-left fa-xl arrow-return"></i>
   <i class="fa fa-times fa-xl close-modal"></i>
   <h2 class="title-modal">Ajout Photo</h2>
-  <div class="download-modal">
-    <i class="fa fa-image countryside"></i>
-    <label for="imageInput" class="download-button">+ Ajouter photo</label>
-    <input type="file" id="imageInput"  accept="image/*">
-    <p class="format">jpg, png: 4mo max</p>
-    <img class="preview-img" src="#" alt="aperçu de l'image" style="display:none">
-  </div>
   <form class="formulaire-modal">
+    <div class="download-modal">
+      <i class="fa fa-image countryside"></i>
+      <label for="imageInput" class="download-button">+ Ajouter photo</label>
+      <input type="file" id="imageInput"  accept="image/*">
+      <p class="format">jpg, png: 4mo max</p>
+      <img class="preview-img" src="#" alt="aperçu de l'image" style="display:none">
+    </div>
     <label>Titre</label>
     <input id="titleInput" type="text">
     <label>Catégorie</label>
-    <select class="category-modal" id="options">
-      <option value="disabled selected">Tous</option>
-      <option value="category1">Objets</option>
-      <option value="category2">Appartements</option>
-      <option value="category3">Hôtels et restaurants</option>
-    </select>
+      <select class="category-modal" id="options">
+        <option value="disabled selected">Tous</option>
+        <option value="category1">Objets</option>
+        <option value="category2">Appartements</option>
+        <option value="category3">Hôtels et restaurants</option>
+      </select>
   </form>
   <div class="gray-bar"></div>
-  <button id="button-validate" class="green-button">Valider</button>
+  <button id="button-validate" class="gray-button">Valider</button>
 </div>
   `;
 
@@ -286,7 +310,7 @@ function modalDisplayAddWorks() {
   btnValidate.addEventListener('click', () => {
     addProject();
   });
-  };
+};
 
 //supprimer un projet
 async function deleteProject(id) {
@@ -315,19 +339,17 @@ async function deleteProject(id) {
       imagePreview.style.display = "block";
       imagePreview.src = newImg.result;
   
+  // Cacher l'icône "countryside", le bouton et le paragraphe
+  buttonDownload.style.display = "none";
+  countrysideIcon.style.display = "none";
+  addBtn.style.display = "none";
+  formatModal.style.display = "none";
+});
 
-      // Cacher l'icône "countryside", le bouton et le paragraphe
-      buttonDownload.style.display = "none";
-      countrysideIcon.style.display = "none";
-      addBtn.style.display = "none";
-      formatModal.style.display = "none";
-    });
-
-    // Charger le fichier sélectionné dans le FileReader
-    newImg.readAsDataURL(selectedFile);
-  });
+  // Charger le fichier sélectionné dans le FileReader
+  newImg.readAsDataURL(selectedFile);
+});
 }
-
 
 //Ajout du projet sur galerie
 async function addProject() {
@@ -335,6 +357,12 @@ async function addProject() {
   const title = document.getElementById("titleInput").value;
   const category = document.getElementById("options").value;
 
+  // Vérification des champs requis
+  if (!selectedFile || !title || !category) {
+    // Afficher une fenêtre d'alerte
+    window.alert("Veuillez remplir tous les champs requis.");
+    return; // Ne pas continuer si des champs sont manquants
+  }
   // FormData envoie le fichier d'image, titre et catégorie
   const formData = new FormData();
 formData.append("image", selectedFile);
@@ -352,7 +380,7 @@ formData.append("category", 1);
       body: formData,
     });
 
-    // Vérifie si la réponse indique que l'envoi a réussi
+    // Vérifie si la réponse indique que l'envoi a réussi, sinon message d'erreur
     if (response.ok) {
       const data = await response.json();
       console.log("Projet ajouté avec succès :", data);
@@ -365,26 +393,4 @@ formData.append("category", 1);
     console.error("Erreur lors de la requête :", error);
   }
 };
-
-//remplissage du formulaire bouton devient vert quand le formulaire est complété
-  document.addEventListener("DOMContentLoaded", function () {
-    const previewImg = document.querySelector(".preview-img");
-    const buttonValidate = document.getElementById("button-validate");
-    const title = document.getElementById("titleInput");
-  
-       // Écouteur d'événement pour le changement de l'input de type text
-      title.addEventListener("input", function () {
-        updateButton();
-      });
-     
-
-    function updateButton() {
-      if (previewImg.src !== "#" && title.value.trim() !== "") {
-        buttonValidate.classList.add(".green-button")
-      } else {
-        buttonValidate.classList.remove(".green-button")
-      }
-    }});
- 
- 
  

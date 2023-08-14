@@ -287,7 +287,7 @@ footer nav ul {
 	top: 30px;
 }
 .title-modal {
-	width:100%;
+	width: 100%;
 	color: black;
 }
 .gallery-modal {
@@ -426,7 +426,6 @@ margin: 10px;
 #button-validate { 
 	align-self: center;
 	width: 50%;
-	background-color: rgb(199, 197, 197);
 	color: white;
 	border: none;
 	border-radius: 20px;
@@ -435,9 +434,13 @@ margin: 10px;
 	font-weight: 400;
 }
 
+.gray-button {
+	background-color: rgb(199, 197, 197);
+}
 .green-button {
 	background-color: #1D6154;
 	color: white;
 }
+
 
 
