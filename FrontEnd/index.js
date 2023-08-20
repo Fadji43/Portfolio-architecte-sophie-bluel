@@ -319,7 +319,18 @@ async function deleteProject(id) {
     'authorization': `bearer ${localStorage.getItem('token')}`
     }  
   });
-}; 
+  if (response.ok) {
+    console.log("Projet supprimé avec succès :", id);
+
+    // Retirez le projet supprimé de la liste
+    allWorks = allWorks.filter(work => work.id !== id);
+
+    // Mettez à jour l'affichage de la galerie
+    ajoutGallery(allWorks);
+  } else {
+    console.error("Échec de la suppression du projet.");
+  }
+} 
 
  //télecharger une image
  async function downloadImg() {
@@ -407,6 +418,7 @@ if (!selectedFile || !title.value || !category.value) {
     if (response.ok) {
       const data = await response.json();
       console.log("Projet ajouté avec succès :", data);
+      allWorks.push(data);
       ajoutGallery(allWorks);
       closeModal();
     } else {
@@ -416,3 +428,31 @@ if (!selectedFile || !title.value || !category.value) {
     console.error("Erreur lors de la requête :", error);
   }
 };
+
+// Fonction pour ajouter le projet à la liste de projets
+function addToProjectList(projectData) {
+  const projectList = document.getElementById("projectList");
+
+  const projectElement = document.createElement("div");
+  projectElement.classList.add("project");
+
+  // Créez les éléments HTML pour afficher les informations du projet
+  const imageElement = document.createElement("img");
+  imageElement.src = projectData.imageURL;
+  imageElement.alt = "Image du projet";
+  imageElement.classList.add("project-image"); // Ajoutez des classes CSS si nécessaire
+
+  const titleElement = document.createElement("h3");
+  titleElement.textContent = projectData.title;
+
+  const categoryElement = document.createElement("p");
+  categoryElement.textContent = projectData.category;
+
+  // Ajoutez les éléments au projectElement
+  projectElement.appendChild(imageElement);
+  projectElement.appendChild(titleElement);
+  projectElement.appendChild(categoryElement);
+
+  // Ajoutez le projectElement à la liste de projets
+  projectList.appendChild(projectElement);
+}
