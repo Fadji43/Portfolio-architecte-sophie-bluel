@@ -214,9 +214,6 @@ function modalDisplayWorksGallery(works) {
   for (const el of form.elements) {
     el.addEventListener('change', validateForm);
   }
- 
-  const previewImg = document.querySelector(".preview-img");
-  previewImg.addEventListener('load', validateForm);
 });
 
 //supprimer la galerie 
@@ -231,49 +228,49 @@ function modalDisplayWorksGallery(works) {
 function validateForm() {
   const previewImg = document.querySelector(".preview-img");
   const title = document.getElementById("titleInput");
-  const categoryModal = document.querySelector(".category-modal")
+  const categoryModal = document.querySelector(".category-modal");
   const buttonValidate = document.getElementById("button-validate");
 
-  const hasImage = previewImg.src !== '#';
+  const hasImage = previewImg.getAttribute("src") !== '#';
   const isTitleOk = title.value.trim().length > 0;
   const isCategorySelected = categoryModal.value !== '';
 
-  if ( hasImage && isTitleOk && isCategorySelected) {
+  if (hasImage && isTitleOk && isCategorySelected) {
     buttonValidate.classList.add('green-button');
   } else {
     buttonValidate.classList.remove('green-button');
-  };
+  }
 };
 
 function modalDisplayAddWorks() {
   const modalContent = document.getElementById('modal-content');
   modalContent.innerHTML = `
-  <div id="modal" data-keyboard="true" data-backdrop="true">
-  <i class="fa-solid fa-arrow-left fa-xl arrow-return"></i>
-  <i class="fa fa-times fa-xl close-modal"></i>
-  <h2 class="title-modal">Ajout Photo</h2>
-  <form class="formulaire-modal">
-    <div class="download-modal">
-      <i class="fa fa-image countryside"></i>
-      <label for="imageInput" class="download-button">+ Ajouter photo</label>
-      <input type="file" id="imageInput"  accept="image/*">
-      <p class="format">jpg, png: 4mo max</p>
-      <img class="preview-img" src="#" alt="aperçu de l'image" style="display:none">
-    </div>
-    <label>Titre</label>
-    <input id="titleInput" type="text">
-    <label>Catégorie</label>
-      <select class="category-modal" id="options">
-        <option value="disabled selected">Tous</option>
-        <option value="category1">Objets</option>
-        <option value="category2">Appartements</option>
-        <option value="category3">Hôtels et restaurants</option>
-      </select>
-  </form>
-  <div class="gray-bar"></div>
-  <button id="button-validate" class="gray-button">Valider</button>
-</div>
-  `;
+    <i class="fa-solid fa-arrow-left fa-xl arrow-return"></i>
+    <i class="fa fa-times fa-xl close-modal"></i>
+    <h2 class="title-modal">Ajout Photo</h2>
+    <form class="formulaire-modal">
+      <div class="download-modal">
+        <i class="fa fa-image countryside"></i>
+        <label for="imageInput" class="download-button">+ Ajouter photo</label>
+        <input type="file" id="imageInput" accept="image/*">
+        <p class="format">jpg, png: 4mo max</p>
+        <img id="imageError" class="preview-img" src="#" alt="aperçu de l'image" style="display:none">
+      </div>
+      <label>Titre</label>
+      <input id="titleInput" class="error" type="text">
+      <label>Catégorie</label>
+        <select class="category-modal" id="options">
+          <option value="disabled selected">Tous</option>
+          <option value="category1">Objets</option>
+          <option value="category2">Appartements</option>
+          <option value="category3">Hôtels et restaurants</option>
+        </select>  
+    </form>
+    <div class="gray-bar"></div>
+    <div id="errorContainer" class="error-message"></div> 
+    <button id="button-validate" class="gray-button">Valider</button>
+  </div>
+`;
 
   // Flèche de retour modal
   const arrowModalBtn = document.createElement('i');
@@ -281,9 +278,10 @@ function modalDisplayAddWorks() {
   arrowModalBtn.addEventListener('click', () => {
     modalDisplayWorksGallery(allWorks);
   });
-
+  
   modalContent.appendChild(arrowModalBtn);
 
+  
   modalContent.appendChild(arrowModalBtn);
   const closeModalButton = document.querySelector('.close-modal');
   closeModalButton.addEventListener('click', closeModal); 
@@ -301,7 +299,8 @@ function modalDisplayAddWorks() {
   
   const grayBar = document.querySelector('.gray-bar');
   modalContent.appendChild(grayBar);
-  
+  const errorMessage = document.querySelector('.error-message')
+  modalContent.appendChild(errorMessage)
   const btnValidate = document.getElementById('button-validate');
   modalContent.appendChild(btnValidate);
   
@@ -354,20 +353,44 @@ async function deleteProject(id) {
 //Ajout du projet sur galerie
 async function addProject() {
   const selectedFile = document.getElementById("imageInput").files[0];
-  const title = document.getElementById("titleInput").value;
-  const category = document.getElementById("options").value;
+  const title = document.getElementById("titleInput");
+  const category = document.getElementById("options");
+  const errorContainer = document.getElementById("errorContainer");
 
-  // Vérification des champs requis
-  if (!selectedFile || !title || !category) {
-    // Afficher une fenêtre d'alerte
-    window.alert("Veuillez remplir tous les champs requis.");
-    return; // Ne pas continuer si des champs sont manquants
+  // Supprimer les classes d'erreur précédentes
+  title.classList.remove("error");
+  category.classList.remove("error");
+  errorContainer.innerHTML = ""; // Effacer les anciens messages d'erreur
+  
+// Vérification des champs requis
+if (!selectedFile || !title.value || !category.value) {
+  // Ajouter les classes d'erreur aux champs manquants
+  if (!selectedFile) {
+    document.getElementById("imageInput").classList.add("error");
+  } else {
+    document.getElementById("imageInput").classList.remove("error");
   }
+  if (!title.value) {
+    title.classList.add("error");
+  } else {
+    title.classList.remove("error");
+  }
+  if (!category.value) {
+    category.classList.add("error");
+  } else {
+    category.classList.remove("error");
+  }
+
+  // message d'erreur
+  errorContainer.innerHTML = "Veuillez remplir tous les champs requis.";
+  return;
+}
+
   // FormData envoie le fichier d'image, titre et catégorie
   const formData = new FormData();
-formData.append("image", selectedFile);
-formData.append("title", title);
-formData.append("category", 1);
+    formData.append("image", selectedFile);
+    formData.append("title", title.value);
+    formData.append("category", 1);
   
   for (const value of formData.values()) {
     console.log(value);
@@ -393,4 +416,3 @@ formData.append("category", 1);
     console.error("Erreur lors de la requête :", error);
   }
 };
- 

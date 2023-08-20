@@ -266,19 +266,19 @@ footer nav ul {
 
 /*****************Modale*************/
 #modal {
-	width: 35%;
-	height: 80%;
+	width: 25%;
+	height: 65%;
 	background-color: white;
 	border: none; 
 	border-radius: 20px;
 	padding: 0;
-	/*overflow: hidden;*/
+	overflow: hidden;
 }
 #modal-content {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	margin: 40px;
+	margin: 50px;
 }
 
 .close-modal {
@@ -441,6 +441,13 @@ margin: 10px;
 	background-color: #1D6154;
 	color: white;
 }
-
-
-
+.error {
+	border: 2px solid red;
+  }
+  
+.error-message {
+	width: 100%;
+	color: red;
+	font-size: 14px;
+	margin: 20px;
+}
