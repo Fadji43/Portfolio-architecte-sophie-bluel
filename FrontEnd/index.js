@@ -55,10 +55,8 @@ function isLoggedIn() {
 
 function logoutUser() {
   localStorage.removeItem('token'); // Supprime le token du local storage
-  // Ajouter un délai avant la redirection pour permettre la mise à jour de l'interface utilisateur
-    window.location.href = 'index.html'; // Redirige vers la page d'accueil après la déconnexion
+    window.location.href = 'index.html';
 }
-
 
 //éléments apparaissant, disparu ou modifié en fonction de la connexion
 const modeEditeur = document.getElementById('modeEditor');
@@ -84,13 +82,6 @@ function updateLogout()  {
   modeEditeur.style.display = "none";
   btnCategory.style.display = "block";
   connexion.innerText = "Login";
-}
-
-// Vérifie l'état de connexion au chargement de la page et met à jour l'interface utilisateur en conséquence
-if (isLoggedIn()) {
-  updateLogin();
-} else {
-  updateLogout();
 }
 
 // Ajoutez un événement de clic au bouton pour gérer la connexion/déconnexion
