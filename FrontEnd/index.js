@@ -312,12 +312,14 @@ async function deleteProject(id) {
   });
   if (response.ok) {
     console.log("Projet supprimé avec succès :", id);
+    
 
     // Retirez le projet supprimé de la liste
     allWorks = allWorks.filter(work => work.id !== id);
 
     // Mettez à jour l'affichage de la galerie
     ajoutGallery(allWorks);
+    closeModal();
   } else {
     console.error("Échec de la suppression du projet.");
   }
@@ -421,7 +423,7 @@ if (!selectedFile || !title.value || !category.value) {
 };
 
 // Fonction pour ajouter le projet à la liste de projets
-function addToProjectList(projectData) {
+/*function addToProjectList(projectData) {
   const projectList = document.getElementById("projectList");
 
   const projectElement = document.createElement("div");
@@ -446,4 +448,4 @@ function addToProjectList(projectData) {
 
   // Ajoutez le projectElement à la liste de projets
   projectList.appendChild(projectElement);
-}
+}*/
